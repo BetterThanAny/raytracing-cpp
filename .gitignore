@@ -1,0 +1,6 @@
+build/
+output/*.ppm
+.DS_Store
+*.o
+*.obj
+compile_commands.json
