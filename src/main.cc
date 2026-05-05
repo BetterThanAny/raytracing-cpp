@@ -13,6 +13,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 // -------- Book 1 scenes --------
@@ -468,45 +469,55 @@ int main(int argc, char** argv) {
     hittable_list lights;
     camera cam;
 
-    if      (scene == "first_light")          scene_first_light(world, cam);
-    else if (scene == "book1_final_preview")  scene_book1_final(world, cam, 50, 400);
-    else if (scene == "book1_final")          scene_book1_final(world, cam, 500, 1200);
-    else if (scene == "bouncing_spheres_preview") scene_bouncing_spheres(world, cam, 50, 400);
-    else if (scene == "bouncing_spheres")     scene_bouncing_spheres(world, cam, 500, 1200);
-    else if (scene == "checkered_spheres")    scene_checkered_spheres(world, cam);
-    else if (scene == "earth")                scene_earth(world, cam);
-    else if (scene == "perlin_spheres")       scene_perlin_spheres(world, cam);
-    else if (scene == "quads")                scene_quads(world, cam);
-    else if (scene == "simple_light")         scene_simple_light(world, cam);
-    else if (scene == "cornell_box_preview")  scene_cornell_box(world, cam, 100, 300);
-    else if (scene == "cornell_box")          scene_cornell_box(world, cam, 1000, 600);
-    else if (scene == "cornell_box_mcmc_preview") scene_cornell_box(world, cam, 100, 300, &lights);
-    else if (scene == "cornell_box_mcmc")     scene_cornell_box(world, cam, 1000, 600, &lights);
-    else if (scene == "cornell_smoke_preview") scene_cornell_smoke(world, cam, 100, 300);
-    else if (scene == "cornell_smoke")        scene_cornell_smoke(world, cam, 1000, 600);
-    else if (scene == "book2_final_preview")  scene_book2_final(world, cam, 100, 400);
-    else if (scene == "book2_final")          scene_book2_final(world, cam, 10000, 800);
-    else if (scene == "icosahedron")          scene_icosahedron(world, cam);
-    else if (scene == "bunny_preview")        scene_bunny(world, cam, 50, 400);
-    else if (scene == "bunny")                scene_bunny(world, cam, 300, 1000);
-    else if (scene == "bunny_cornell_preview") scene_bunny_cornell(world, cam, 100, 300, &lights);
-    else if (scene == "bunny_cornell")        scene_bunny_cornell(world, cam, 500, 600, &lights);
-    else {
-        std::cerr << "Unknown scene: " << scene << "\n";
-        std::cerr << "Available scenes:\n"
-                  << "  Book 1: first_light, book1_final_preview, book1_final\n"
-                  << "  Book 2: bouncing_spheres(_preview), checkered_spheres, earth,\n"
-                  << "          perlin_spheres, quads, simple_light,\n"
-                  << "          cornell_box(_preview), cornell_smoke(_preview),\n"
-                  << "          book2_final(_preview)\n"
-                  << "  Book 3: cornell_box_mcmc(_preview)\n"
-                  << "  Meshes: icosahedron, bunny(_preview), bunny_cornell(_preview)\n";
+    try {
+        if      (scene == "first_light")          scene_first_light(world, cam);
+        else if (scene == "book1_final_preview")  scene_book1_final(world, cam, 50, 400);
+        else if (scene == "book1_final")          scene_book1_final(world, cam, 500, 1200);
+        else if (scene == "bouncing_spheres_preview") scene_bouncing_spheres(world, cam, 50, 400);
+        else if (scene == "bouncing_spheres")     scene_bouncing_spheres(world, cam, 500, 1200);
+        else if (scene == "checkered_spheres")    scene_checkered_spheres(world, cam);
+        else if (scene == "earth")                scene_earth(world, cam);
+        else if (scene == "perlin_spheres")       scene_perlin_spheres(world, cam);
+        else if (scene == "quads")                scene_quads(world, cam);
+        else if (scene == "simple_light")         scene_simple_light(world, cam);
+        else if (scene == "cornell_box_preview")  scene_cornell_box(world, cam, 100, 300);
+        else if (scene == "cornell_box")          scene_cornell_box(world, cam, 1000, 600);
+        else if (scene == "cornell_box_mcmc_preview") scene_cornell_box(world, cam, 100, 300, &lights);
+        else if (scene == "cornell_box_mcmc")     scene_cornell_box(world, cam, 1000, 600, &lights);
+        else if (scene == "cornell_smoke_preview") scene_cornell_smoke(world, cam, 100, 300);
+        else if (scene == "cornell_smoke")        scene_cornell_smoke(world, cam, 1000, 600);
+        else if (scene == "book2_final_preview")  scene_book2_final(world, cam, 100, 400);
+        else if (scene == "book2_final")          scene_book2_final(world, cam, 10000, 800);
+        else if (scene == "icosahedron")          scene_icosahedron(world, cam);
+        else if (scene == "bunny_preview")        scene_bunny(world, cam, 50, 400);
+        else if (scene == "bunny")                scene_bunny(world, cam, 300, 1000);
+        else if (scene == "bunny_cornell_preview") scene_bunny_cornell(world, cam, 100, 300, &lights);
+        else if (scene == "bunny_cornell")        scene_bunny_cornell(world, cam, 500, 600, &lights);
+        else {
+            std::cerr << "Unknown scene: " << scene << "\n";
+            std::cerr << "Available scenes:\n"
+                      << "  Book 1: first_light, book1_final_preview, book1_final\n"
+                      << "  Book 2: bouncing_spheres(_preview), checkered_spheres, earth,\n"
+                      << "          perlin_spheres, quads, simple_light,\n"
+                      << "          cornell_box(_preview), cornell_smoke(_preview),\n"
+                      << "          book2_final(_preview)\n"
+                      << "  Book 3: cornell_box_mcmc(_preview)\n"
+                      << "  Meshes: icosahedron, bunny(_preview), bunny_cornell(_preview)\n";
+            return 1;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to build scene '" << scene << "': " << e.what() << "\n";
         return 1;
     }
 
     // BVH wrap for acceleration
     hittable_list accelerated;
-    accelerated.add(make_shared<bvh_node>(world));
+    try {
+        accelerated.add(make_shared<bvh_node>(world));
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to build BVH for scene '" << scene << "': " << e.what() << "\n";
+        return 1;
+    }
 
     auto t0 = std::chrono::steady_clock::now();
     std::vector<color> framebuffer;
@@ -521,7 +532,10 @@ int main(int argc, char** argv) {
         std::cerr << "Failed to write " << png_path << "\n";
         return 1;
     }
-    write_ppm(ppm_path, cam.get_image_width(), cam.get_image_height(), framebuffer);
+    if (!write_ppm(ppm_path, cam.get_image_width(), cam.get_image_height(), framebuffer)) {
+        std::cerr << "Failed to write " << ppm_path << "\n";
+        return 1;
+    }
     std::clog << "Wrote " << png_path << " and " << ppm_path << "\n";
     return 0;
 }

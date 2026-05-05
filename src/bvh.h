@@ -6,6 +6,7 @@
 #include "rtweekend.h"
 
 #include <algorithm>
+#include <stdexcept>
 #include <vector>
 
 class bvh_node : public hittable {
@@ -13,6 +14,9 @@ public:
     bvh_node(hittable_list list) : bvh_node(list.objects, 0, list.objects.size()) {}
 
     bvh_node(std::vector<shared_ptr<hittable>>& objects, size_t start, size_t end) {
+        if (start >= end)
+            throw std::invalid_argument("bvh_node: cannot build BVH from an empty hittable range");
+
         bbox = aabb::empty;
         for (size_t i = start; i < end; ++i)
             bbox = aabb(bbox, objects[i]->bounding_box());
